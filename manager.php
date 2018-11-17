@@ -43,4 +43,10 @@ echo "</table>\n";
 
 
 ?>
-
+<html>
+<body>
+<input type="button" value="print" onClick="window.print()"/>
+<script type="text/javascript">
+</script>
+</body>
+</html>

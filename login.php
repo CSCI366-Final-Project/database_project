@@ -2,7 +2,8 @@
 <body>
 <?php 
 session_start();
- $con = oci_connect('holme', 'Apr621997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
+$con = oci_connect('holme', 'Apr621997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
+
 if (!$con) {
 $m = oci_error();
 echo $m['message'], "\n";
@@ -26,7 +27,7 @@ oci_execute($stid);
 $row = oci_fetch_array($stid, OCI_ASSOC);
 
  if ($row) {
- $_SESSION['name']=$_POST['name'];
+ $_SESSION['email']=$_POST['email'];
  echo"log in successful";
   }
  else 

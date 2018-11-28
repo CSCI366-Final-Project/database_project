@@ -1,13 +1,57 @@
-<h1>Customer Records</h1>
-
-
+<h1 align="center">Customer Records</h1>
 <?php
 
 // Remember to replace 'username' and 'password'!
 $conn = oci_connect('holme', 'Apr621997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
 
+
+
+if (isset($_POST['submit']))
+{
+  $ID = $_POST['ID'];
+  $firstname = $_POST['firstname'];
+  $lastname = $_POST['lastname'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $address = $_POST['address'];
+
+  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (:ID, :firstname, :lastname, :email, :password, :address)");
+
+  oci_bind_by_name($stid2, ':ID', $ID);
+  oci_bind_by_name($stid2, ':firstname', $firstname);
+  oci_bind_by_name($stid2, ':lastname', $lastname);
+  oci_bind_by_name($stid2, ':email', $email);
+  oci_bind_by_name($stid2, ':password', $password);
+  oci_bind_by_name($stid2, ':address', $address);
+
+  $r = oci_execute($stid2, OCI_NO_AUTO_COMMIT);
+
+  // Commit the changes
+  $r = oci_commit($conn);
+  if (!$r) {
+    $e = oci_error($conn);
+    trigger_error(htmlentities($e['message']), E_USER_ERROR);
+  }
+
+  if (!$r) {    
+    $e = oci_error($stid2);
+    trigger_error(htmlentities($e['message']), E_USER_ERROR);
+  }
+}
+
+//method to delete customer record
+if (isset($_GET['delete'])) {
+	$query = "DELETE FROM Customer ";  
+	$query .="WHERE email = '".$_GET["email"]."' ";  
+	$objParse = oci_parse($conn, $query);  
+	oci_bind_by_name($query, ':email', $email);
+	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
+	oci_commit($conn); //*** Commit Transaction ***//  
+}
+
+
 //put your query here
-$query = "SELECT * FROM Customer";
+$query = "SELECT * FROM Customer ORDER BY cid";
 $stid = oci_parse($conn,$query);
 oci_execute($stid,OCI_DEFAULT);
 
@@ -22,6 +66,7 @@ oci_execute($stid,OCI_DEFAULT);
 	print "<th>Address</th>\n";
 	print "</tr>";
 
+  
 //iterate through each row
 while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS)) 
 {
@@ -35,39 +80,37 @@ while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS))
 	echo "</tr>\n";
 }
 
-$ID = $_POST['ID'];
-$first_name = $_POST['firstname'];
-$last_name = $_POST['lastname'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-$address = $_POST['address'];
-
-$stid2 = oci_parse($conn, "INSERT INTO Customer (cid,first_name,last_name,email,password,address) VALUES ('$ID', '$first_name', '$last_name', '$email', '$password', $'address')");
-
-// The OCI_NO_AUTO_COMMIT flag tells Oracle not to commit the INSERT immediately
-// Use OCI_DEFAULT as the flag for PHP <= 5.3.1.  The two flags are equivalent
-$r = oci_execute($stid, OCI_NO_AUTO_COMMIT);
-if (!$r) {    
-    $e = oci_error($stid);
-    trigger_error(htmlentities($e['message']), E_USER_ERROR);
-}
-
-// Commit the changes
-$r = oci_commit($conn);
-if (!$r) {
-    $e = oci_error($conn);
-    trigger_error(htmlentities($e['message']), E_USER_ERROR);
-}
-
-
-oci_free_statement($stid);
-oci_close($conn);
-
 echo "</table>\n";
 
+oci_free_statement($stid);
 
+
+oci_close($conn);
 
 ?>
+
+<html>
+<head>
+<style>
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+</head></html>
+
 <html>
 <body>
 <br>
@@ -77,8 +120,10 @@ echo "</table>\n";
 </body>
 </html>
 
-<form action="manager.php">
-  <br>
+<hr style="border-bottom: dotted 1px #000" />
+
+<h3> Add Customer </h3>
+<form action="manager.php" method="post">
   ID:<br>
   <input type="text" name="ID">
   <br>
@@ -97,5 +142,17 @@ echo "</table>\n";
   Addresss:<br>
   <input type="text" name="address">
   <br><br>
-  <input type="submit" value="Add Customer">
+  <input class="submit" name="submit" type="submit" value="Add Customer">
 </form> 
+
+<hr style="border-bottom: dotted 1px #000" />
+
+<h3> Delete Customer </h3>
+<form action="manager.php" form method="get">
+    Email:<br>
+    <input name="email" type="text" size="25">
+    <br><br>
+<input name="delete" type="submit" value="Remove"/>
+</form>
+
+

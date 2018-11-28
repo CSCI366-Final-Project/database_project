@@ -57,16 +57,16 @@ $conn = oci_connect('holme', 'Apr621997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(
 
 if (isset($_POST['submit']))
 {
-  $ID = $_POST['ID'];
+  //$ID = $_POST['ID'];
   $firstname = $_POST['firstname'];
   $lastname = $_POST['lastname'];
   $email = $_POST['email'];
   $password = $_POST['password'];
   $address = $_POST['address'];
 
-  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (:ID, :firstname, :lastname, :email, :password, :address)");
+  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cid.nextval, :firstname, :lastname, :email, :password, :address)");
 
-  oci_bind_by_name($stid2, ':ID', $ID);
+  //oci_bind_by_name($stid2, ':ID', $ID);
   oci_bind_by_name($stid2, ':firstname', $firstname);
   oci_bind_by_name($stid2, ':lastname', $lastname);
   oci_bind_by_name($stid2, ':email', $email);
@@ -129,6 +129,7 @@ while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS))
 	echo "</tr>\n";
 }
 
+
 echo "</table>\n";
 
 oci_free_statement($stid);
@@ -169,12 +170,15 @@ th {
 </body>
 </html>
 
+
 <hr style="border-bottom: dotted 1px #000" />
 
 <h3> Add Customer </h3>
 <form action="manager.php" method="post">
-  ID:<br>
+<!--
+  <br>  ID:<br>
   <input type="text" name="ID">
+-->
   <br>
 
   First name:<br>

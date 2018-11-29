@@ -36,45 +36,47 @@ body {
 <body>
 
 <div class="topnav">
-  <a class="active" href="manager.php">Customers</a>
+  <a href="manager.php">Customers</a>
   <a href="department.php">Department</a>
-  <a href="product.php">Product</a>
+  <a class="active" href="product.php">Product</a>
   <a href="supplier.php">Supplier</a>
   <a href="inventory.php">Full Inventory</a>
+
+
 </div>
 
 <div style="padding-left:16px">
   <h2>Hello Admin</h2>
-  <p>Update customer records here.</p>
+  <p>Update products here.</p>
 </div>
 
 </body>
 </html>
-<h1 align="center">Customer Records</h1>
+
+
+<h1 align="center">Product Records</h1>
+
+
 <?php
 
 // Remember to replace 'username' and 'password'!
 $conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
 
 
-
 if (isset($_POST['submit']))
 {
-  //$ID = $_POST['ID'];
-  $firstname = $_POST['firstname'];
-  $lastname = $_POST['lastname'];
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  $address = $_POST['address'];
+  $productname = $_POST['productname'];
+  $price = $_POST['price'];
+  $quantity = $_POST['quantity'];
+  $departmentid = $_POST['departmentid'];
 
-  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cidSeq.nextval, :firstname, :lastname, :email, :password, :address)");
 
-  //oci_bind_by_name($stid2, ':ID', $ID);
-  oci_bind_by_name($stid2, ':firstname', $firstname);
-  oci_bind_by_name($stid2, ':lastname', $lastname);
-  oci_bind_by_name($stid2, ':email', $email);
-  oci_bind_by_name($stid2, ':password', $password);
-  oci_bind_by_name($stid2, ':address', $address);
+  $stid2 = oci_parse($conn, "INSERT INTO Product (pid, product_name, price, quantity, did) VALUES (cidSeq.nextval, :productname, :price, :quantity, :departmentid)");
+
+  oci_bind_by_name($stid2, ':productname', $productname);
+  oci_bind_by_name($stid2, ':price', $price);
+  oci_bind_by_name($stid2, ':quantity', $quantity);
+  oci_bind_by_name($stid2, ':departmentid', $departmentid);
 
   $r = oci_execute($stid2, OCI_NO_AUTO_COMMIT);
 
@@ -93,32 +95,32 @@ if (isset($_POST['submit']))
 
 //method to delete customer record
 if (isset($_POST['delete'])) {
-	$query = "DELETE FROM Customer ";  
-	$query .="WHERE email = '".$_POST["email"]."' ";  
+	$query = "DELETE FROM Product ";  
+	$query .="WHERE pid = '".$_POST["productid"]."' ";  
 	$objParse = oci_parse($conn, $query);  
-	oci_bind_by_name($query, ':email', $email);
+	oci_bind_by_name($query, ':productid', $productid);
 	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
 	oci_commit($conn); //*** Commit Transaction ***//  
 }
 
 
 //put your query here
-$query = "SELECT * FROM Customer ORDER BY cid";
+
+$query = "SELECT * FROM Product ORDER BY pid";
+
 $stid = oci_parse($conn,$query);
 oci_execute($stid,OCI_DEFAULT);
 
 	// Format table layout
 	print "<table cols=5 border=1>\n";
 	print "<tr>\n";
-	print "<th>ID</th>\n";
-	print "<th>First Name</th>\n";
-	print "<th>Last Name</th>\n";
-	print "<th>Email</th>\n";
-	print "<th>Password</th>\n";
-	print "<th>Address</th>\n";
+	print "<th>Product ID</th>\n";
+	print "<th>Product Name</th>\n";
+	print "<th>Price</th>\n";
+	print "<th>Quantity</th>\n";
+	print "<th>Department ID</th>\n";
 	print "</tr>";
 
-  
 //iterate through each row
 while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS)) 
 {
@@ -131,16 +133,21 @@ while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS))
     }   
 	echo "</tr>\n";
 }
-
+oci_free_statement($stid);
+oci_close($conn);
 
 echo "</table>\n";
 
-oci_free_statement($stid);
 
-
-oci_close($conn);
 
 ?>
+<html>
+<body>
+<input type="button" value="print" onClick="window.print()"/>
+<script type="text/javascript">
+</script>
+</body>
+</html>
 
 <html>
 <head>
@@ -164,52 +171,38 @@ th {
 </style>
 </head></html>
 
-<html>
-<body>
-<br>
-<input type="button" value="print" onClick="window.print()"/>
-<script type="text/javascript">
-</script>
-</body>
-</html>
-
 
 <hr style="border-bottom: dotted 1px #000" />
 
-<h3> Add Customer </h3>
-<form action="manager.php" method="post">
-<!--
-  <br>  ID:<br>
-  <input type="text" name="ID">
+<h3> Add Product </h3>
+<form action="product.php" method="post">
+
+  Product name:<br>
+  <input type="text" name="productname">
   <br>
--->
-  First name:<br>
-  <input type="text" name="firstname">
+  Price:<br>
+  <input type="text" name="price">
   <br>
-  Last name:<br>
-  <input type="text" name="lastname">
+  Quanity:<br>
+  <input type="text" name="quantity">
   <br>
-  Email:<br>
-  <input type="text" name="email">
-  <br>
-  Password:<br>
-  <input type="text" name="password">
-  <br>
-  Address:<br>
-  <input type="text" name="address">
+  Department ID:<br>
+  <input type="text" name="departmentid">
   <br><br>
-  <input class="submit" name="submit" type="submit" value="Add Customer">
+  <input class="submit" name="submit" type="submit" value="Add Product">
 </form> 
 
 <hr style="border-bottom: dotted 1px #000" />
 
-<h3> Delete Customer </h3>
-<form action="manager.php" form method="post">
-    Email:<br>
-    <input name="email" type="text" size="25">
+<h3> Delete Product </h3>
+<form action="product.php" form method="post">
+    Product ID:<br>
+    <input name="productid" type="text" size="25">
     <br><br>
 <input name="delete" type="submit" value="Remove"/>
 <br><br>
 </form>
+
+
 
 

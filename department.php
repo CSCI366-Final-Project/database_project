@@ -36,45 +36,40 @@ body {
 <body>
 
 <div class="topnav">
-  <a class="active" href="manager.php">Customers</a>
-  <a href="department.php">Department</a>
+  <a href="manager.php">Customers</a>
+  <a class="active" href="department.php">Department</a>
   <a href="product.php">Product</a>
   <a href="supplier.php">Supplier</a>
   <a href="inventory.php">Full Inventory</a>
+
+
 </div>
 
 <div style="padding-left:16px">
   <h2>Hello Admin</h2>
-  <p>Update customer records here.</p>
+  <p>Update departments here.</p>
 </div>
 
 </body>
 </html>
-<h1 align="center">Customer Records</h1>
+
+
+<h1 align="center">Department Records</h1>
+
+
 <?php
 
 // Remember to replace 'username' and 'password'!
 $conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
 
 
-
 if (isset($_POST['submit']))
 {
-  //$ID = $_POST['ID'];
-  $firstname = $_POST['firstname'];
-  $lastname = $_POST['lastname'];
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-  $address = $_POST['address'];
+  $departmentname = $_POST['departmentname'];
 
-  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cidSeq.nextval, :firstname, :lastname, :email, :password, :address)");
+  $stid2 = oci_parse($conn, "INSERT INTO Department (did, dep_name) VALUES (cidSeq.nextval, :departmentname)");
 
-  //oci_bind_by_name($stid2, ':ID', $ID);
-  oci_bind_by_name($stid2, ':firstname', $firstname);
-  oci_bind_by_name($stid2, ':lastname', $lastname);
-  oci_bind_by_name($stid2, ':email', $email);
-  oci_bind_by_name($stid2, ':password', $password);
-  oci_bind_by_name($stid2, ':address', $address);
+  oci_bind_by_name($stid2, ':departmentname', $departmentname);
 
   $r = oci_execute($stid2, OCI_NO_AUTO_COMMIT);
 
@@ -93,32 +88,29 @@ if (isset($_POST['submit']))
 
 //method to delete customer record
 if (isset($_POST['delete'])) {
-	$query = "DELETE FROM Customer ";  
-	$query .="WHERE email = '".$_POST["email"]."' ";  
+	$query = "DELETE FROM Department ";  
+	$query .="WHERE dep_name = '".$_POST["departmentname"]."' ";  
 	$objParse = oci_parse($conn, $query);  
-	oci_bind_by_name($query, ':email', $email);
+	oci_bind_by_name($query, ':departmentname', $departmentname);
 	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
 	oci_commit($conn); //*** Commit Transaction ***//  
 }
 
 
+
 //put your query here
-$query = "SELECT * FROM Customer ORDER BY cid";
+$query = "SELECT * FROM Department ORDER BY did";
+
 $stid = oci_parse($conn,$query);
 oci_execute($stid,OCI_DEFAULT);
 
 	// Format table layout
 	print "<table cols=5 border=1>\n";
 	print "<tr>\n";
-	print "<th>ID</th>\n";
-	print "<th>First Name</th>\n";
-	print "<th>Last Name</th>\n";
-	print "<th>Email</th>\n";
-	print "<th>Password</th>\n";
-	print "<th>Address</th>\n";
+	print "<th>Department ID</th>\n";
+	print "<th>Department Name</th>\n";
 	print "</tr>";
 
-  
 //iterate through each row
 while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS)) 
 {
@@ -131,16 +123,23 @@ while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS))
     }   
 	echo "</tr>\n";
 }
-
-
 echo "</table>\n";
 
 oci_free_statement($stid);
-
-
 oci_close($conn);
 
+
+
+
+
 ?>
+<html>
+<body>
+<input type="button" value="print" onClick="window.print()"/>
+<script type="text/javascript">
+</script>
+</body>
+</html>
 
 <html>
 <head>
@@ -164,52 +163,23 @@ th {
 </style>
 </head></html>
 
-<html>
-<body>
-<br>
-<input type="button" value="print" onClick="window.print()"/>
-<script type="text/javascript">
-</script>
-</body>
-</html>
-
-
 <hr style="border-bottom: dotted 1px #000" />
 
-<h3> Add Customer </h3>
-<form action="manager.php" method="post">
-<!--
-  <br>  ID:<br>
-  <input type="text" name="ID">
-  <br>
--->
-  First name:<br>
-  <input type="text" name="firstname">
-  <br>
-  Last name:<br>
-  <input type="text" name="lastname">
-  <br>
-  Email:<br>
-  <input type="text" name="email">
-  <br>
-  Password:<br>
-  <input type="text" name="password">
-  <br>
-  Address:<br>
-  <input type="text" name="address">
+<h3> Add Department </h3>
+<form action="department.php" method="post">
+  Department Name:<br>
+  <input type="text" name="departmentname">
   <br><br>
-  <input class="submit" name="submit" type="submit" value="Add Customer">
+  <input class="submit" name="submit" type="submit" value="Add Department">
 </form> 
 
 <hr style="border-bottom: dotted 1px #000" />
 
-<h3> Delete Customer </h3>
-<form action="manager.php" form method="post">
-    Email:<br>
-    <input name="email" type="text" size="25">
+<h3> Delete Department </h3>
+<form action="department.php" form method="post">
+    Department Name:<br>
+    <input name="departmentname" type="text" size="25">
     <br><br>
 <input name="delete" type="submit" value="Remove"/>
 <br><br>
 </form>
-
-

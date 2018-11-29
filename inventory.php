@@ -37,19 +37,23 @@ body {
 
 <div class="topnav">
   <a href="manager.php">Customers</a>
-  <a class="active" href="inventory.php">Inventory</a>
+  <a href="department.php">Department</a>
+  <a href="product.php">Product</a>
+  <a href="supplier.php">Supplier</a>
+  <a class="active" href="inventory.php">Full Inventory</a>
+
 </div>
 
 <div style="padding-left:16px">
   <h2>Hello Admin</h2>
-  <p>Update inventory here.</p>
+  <p>View full inventory here.</p>
 </div>
 
 </body>
 </html>
 
 
-<h1>Customer Records</h1>
+<h1 align="center">Full Inventory</h1>
 
 
 <?php
@@ -58,17 +62,21 @@ body {
 $conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
 
 //put your query here
-$query = "SELECT * FROM Department, Product, Supplier";
+
+$query = "SELECT * FROM Department t1 INNER JOIN Product t2 ON t1.did = t2.did INNER JOIN Supplier t3 ON t3.pid = t2.pid";
 $stid = oci_parse($conn,$query);
 oci_execute($stid,OCI_DEFAULT);
 
 	// Format table layout
 	print "<table cols=5 border=1>\n";
 	print "<tr>\n";
+	print "<th>Department ID</th>\n";
 	print "<th>Department Name</th>\n";
+	print "<th>Product ID</th>\n";
 	print "<th>Product Name</th>\n";
 	print "<th>Price</th>\n";
 	print "<th>Quantity</th>\n";
+	print "<th>Supplier ID</th>\n";
 	print "<th>Supplier Name</th>\n";
 	print "<th>Supplier Address</th>\n";
 	print "</tr>";

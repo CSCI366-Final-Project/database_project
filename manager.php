@@ -51,7 +51,7 @@ body {
 <?php
 
 // Remember to replace 'username' and 'password'!
-$conn = oci_connect('holme', 'Apr621997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
+$conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(Host=db2.ndsu.edu)(Port=1521)))(CONNECT_DATA=(SID=cs)))');
 
 
 
@@ -64,7 +64,7 @@ if (isset($_POST['submit']))
   $password = $_POST['password'];
   $address = $_POST['address'];
 
-  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cid.nextval, :firstname, :lastname, :email, :password, :address)");
+  $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cidSeq.nextval, :firstname, :lastname, :email, :password, :address)");
 
   //oci_bind_by_name($stid2, ':ID', $ID);
   oci_bind_by_name($stid2, ':firstname', $firstname);
@@ -89,9 +89,9 @@ if (isset($_POST['submit']))
 }
 
 //method to delete customer record
-if (isset($_GET['delete'])) {
+if (isset($_POST['delete'])) {
 	$query = "DELETE FROM Customer ";  
-	$query .="WHERE email = '".$_GET["email"]."' ";  
+	$query .="WHERE email = '".$_POST["email"]."' ";  
 	$objParse = oci_parse($conn, $query);  
 	oci_bind_by_name($query, ':email', $email);
 	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
@@ -178,9 +178,8 @@ th {
 <!--
   <br>  ID:<br>
   <input type="text" name="ID">
--->
   <br>
-
+-->
   First name:<br>
   <input type="text" name="firstname">
   <br>
@@ -202,7 +201,7 @@ th {
 <hr style="border-bottom: dotted 1px #000" />
 
 <h3> Delete Customer </h3>
-<form action="manager.php" form method="get">
+<form action="manager.php" form method="post">
     Email:<br>
     <input name="email" type="text" size="25">
     <br><br>

@@ -12,7 +12,7 @@ DROP SEQUENCE cidSeq;
 CREATE SEQUENCE cidSeq START WITH 1;
 
 INSERT INTO Customer VALUES(cidSeq.nextval,'admin','admin@admin.com','admin','admin','admin');
-INSERT INTO Customer VALUES(cidSeq.nextval,'customer','customer','customer','customer','customer');
+INSERT INTO Customer VALUES(cidSeq.nextval,'customer2','customer2','customer2','customer2','customer2');
 
 
 CREATE TABLE Receipt (rid INT PRIMARY KEY, receipt_price DECIMAL(11,2), receipt_quantity INT, cid INT, FOREIGN KEY(cid) REFERENCES Customer(cid));

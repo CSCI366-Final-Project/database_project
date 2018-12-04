@@ -79,7 +79,7 @@ $conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRES
 
 
 
-if (false) //isset($_POST['submit']))
+if (isset($_POST['submit']))
 {
 /*
   //$ID = $_POST['ID'];
@@ -90,10 +90,10 @@ if (false) //isset($_POST['submit']))
   //$address = $_POST['address'];
 
   //$stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cidSeq.nextval, :firstname, :lastname, :email, :password, :address)");
-stid
-oci_bind_by_name
-oci_execute
-oci_free_statement
+  //stid
+  //oci_bind_by_name
+  //oci_execute
+  //oci_free_statement
   //oci_bind_by_name($stid2, ':ID', $ID);
   oci_bind_by_name($stid2, ':email', $_POST['email']);
   oci_bind_by_name($stid2, ':ccn', $_POST['ccn']);
@@ -102,7 +102,6 @@ oci_free_statement
   oci_bind_by_name($stid2, ':cardName', $_POST['cardName']);
   
 */
-
 
   $stid2 = oci_parse($conn, "SELECT cid FROM Customer WHERE email=:email");
   oci_bind_by_name($stid2, ':email', $_POST['email']);
@@ -119,28 +118,39 @@ oci_free_statement
   $receiptID = oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS);
   oci_free_statement(stid2);
 	
-  $price = 0.0
+  $price = 0.0;
   //OrderedProduct
   foreach($_POST as $key => $value) {
+  
+    //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+
 	if (is_numeric($key)) {
+    //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
 		if ($value != null){
-			if ($value>0) {
-				$stid2 = oci_parse($conn, "SELECT price FROM Product WHERE pid=:key");
+      //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+			if ($value>-10) {
+        echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+        $stid2 = oci_parse($conn, "SELECT price FROM Product WHERE pid=:key");
 				oci_bind_by_name($stid2, ':key', $key);
 				oci_execute($stid2,OCI_DEFAULT);
-				//$tempPrice = SELECT price FROM Product WHERE pid=$key
+        //$tempPrice = SELECT price FROM Product WHERE pid=$key
+        //TODO: $tempPrice is not a number
 				$tempPrice = oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS);
-				oci_free_statement(stid2);
-				
-				$price = $price + $tempPrice*$value
-				
+        oci_free_statement(stid2);
+        
+				echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+				$price = $price + (intval($tempPrice) * intval($value));
+        echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+        
 				//INSERT INTO OrderedProduct (opidSeq.nextval, $key, $receiptID, $value)
 				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct (opidSeq.nextval, :key, :receiptID, :value)");
 				oci_bind_by_name($stid2, ':key', $key);
 				oci_bind_by_name($stid2, ':receiptID', $receiptID);
 				oci_bind_by_name($stid2, ':value', $value);
 				oci_execute($stid2,OCI_DEFAULT);
-				oci_free_statement(stid2);
+        oci_free_statement(stid2);
+
+        echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
 			}
 		}
 	}
@@ -152,7 +162,7 @@ oci_free_statement
   oci_execute($stid2,OCI_DEFAULT);
   oci_free_statement(stid2);
   
-  Payment
+  //Payment
   //INSERT INTO Payment (payment_idSeq.nextval, $_POST['ccn'], $_POST['exp'], $_POST['cvv'], $_POST['cardName'], $price, $receiptID)
   $stid2 = oci_parse($conn, "INSERT INTO Payment (payment_idSeq.nextval, :ccn, :exp, :cvv, :cardName'], :price, :receiptID)");
   oci_bind_by_name($stid2, ':ccn', $_POST['ccn']);
@@ -163,8 +173,9 @@ oci_free_statement
   oci_bind_by_name($stid2, ':receiptID', $receiptID);
   oci_execute($stid2,OCI_DEFAULT);
   oci_free_statement(stid2);
-}
 
+  echo "<h1>Payment of $".$price." in process</h1>";
+}
 /* 
   //get IDs with quantities
   foreach($_POST as $key => $value) {

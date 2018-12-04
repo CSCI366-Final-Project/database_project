@@ -89,9 +89,9 @@ if (isset($_POST['submit']))
 //method to delete customer record
 if (isset($_POST['delete'])) {
 	$query = "DELETE FROM Department ";  
-	$query .="WHERE dep_name = '".$_POST["departmentname"]."' ";  
+	$query .="WHERE did= '".$_POST["ID"]."' ";  
 	$objParse = oci_parse($conn, $query);  
-	oci_bind_by_name($query, ':departmentname', $departmentname);
+	oci_bind_by_name($query, ':ID', $ID);
 	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
 	oci_commit($conn); //*** Commit Transaction ***//  
 }
@@ -177,8 +177,8 @@ th {
 
 <h3> Delete Department </h3>
 <form action="department.php" form method="post">
-    Department Name:<br>
-    <input name="departmentname" type="text" size="25">
+    Department ID:<br>
+    <input name="ID" type="text" size="25">
     <br><br>
 <input name="delete" type="submit" value="Remove"/>
 <br><br>

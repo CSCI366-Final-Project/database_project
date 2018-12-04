@@ -60,7 +60,6 @@ $conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRES
 
 if (isset($_POST['submit']))
 {
-  //$ID = $_POST['ID'];
   $firstname = $_POST['firstname'];
   $lastname = $_POST['lastname'];
   $email = $_POST['email'];
@@ -69,7 +68,6 @@ if (isset($_POST['submit']))
 
   $stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cidSeq.nextval, :firstname, :lastname, :email, :password, :address)");
 
-  //oci_bind_by_name($stid2, ':ID', $ID);
   oci_bind_by_name($stid2, ':firstname', $firstname);
   oci_bind_by_name($stid2, ':lastname', $lastname);
   oci_bind_by_name($stid2, ':email', $email);
@@ -94,9 +92,9 @@ if (isset($_POST['submit']))
 //method to delete customer record
 if (isset($_POST['delete'])) {
 	$query = "DELETE FROM Customer ";  
-	$query .="WHERE email = '".$_POST["email"]."' ";  
+	$query .="WHERE cid = '".$_POST["ID"]."' ";  
 	$objParse = oci_parse($conn, $query);  
-	oci_bind_by_name($query, ':email', $email);
+	oci_bind_by_name($query, ':ID', $ID);
 	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
 	oci_commit($conn); //*** Commit Transaction ***//  
 }
@@ -205,8 +203,8 @@ th {
 
 <h3> Delete Customer </h3>
 <form action="manager.php" form method="post">
-    Email:<br>
-    <input name="email" type="text" size="25">
+    Customer ID:<br>
+    <input name="ID" type="text" size="25">
     <br><br>
 <input name="delete" type="submit" value="Remove"/>
 <br><br>

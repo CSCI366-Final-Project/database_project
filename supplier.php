@@ -90,9 +90,9 @@ if (isset($_POST['submit']))
 
 if (isset($_POST['delete'])) {
 	$query = "DELETE FROM Supplier ";  
-	$query .="WHERE s_name = '".$_POST["suppliername"]."' ";  
+	$query .="WHERE sid= '".$_POST["ID"]."' ";  
 	$objParse = oci_parse($conn, $query);  
-	oci_bind_by_name($query, ':suppliername', $suppliername);
+	oci_bind_by_name($query, ':ID', $ID);
 	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
 	oci_commit($conn); //*** Commit Transaction ***//  
 }
@@ -184,8 +184,8 @@ th {
 
 <h3> Delete Supplier </h3>
 <form action="supplier.php" form method="post">
-    Supplier Name:<br>
-    <input name="suppliername" type="text" size="25">
+    Supplier ID:<br>
+    <input name="ID" type="text" size="25">
     <br><br>
 <input name="delete" type="submit" value="Remove"/>
 <br><br>

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <!-- 
 Still needs:
- - order quantities in the table
- - adding the order to the DB
  - input validation in the form
 -->
 <html>
@@ -58,11 +56,12 @@ th {
 <body>
 
 <div class="topnav">
-  <a class="active" href="manager.php">Customers</a>
+  <a href="manager.php">Customers</a>
   <a href="department.php">Department</a>
   <a href="product.php">Product</a>
   <a href="supplier.php">Supplier</a>
   <a href="inventory.php">Full Inventory</a>
+  <a class="active" href="clothing_store.php">Submit Order</a>
 </div>
 
 <div style="padding-left:16px">
@@ -106,20 +105,21 @@ if (isset($_POST['submit']))
   $stid2 = oci_parse($conn, "SELECT cid FROM Customer WHERE email=:email");
   oci_bind_by_name($stid2, ':email', $_POST['email']);
   oci_execute($stid2,OCI_DEFAULT);
-  $custId = oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS);
+  $custId = array_pop(array_reverse(oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS)));
   oci_free_statement(stid2);
   
   //Receipt
   //INSERT INTO Receipt (ridSeq.nextval, 0, $custId)
-  $stid2 = oci_parse($conn, "INSERT INTO Receipt (ridSeq.nextval, 0, :custId)");
+  $stid2 = oci_parse($conn, "INSERT INTO Receipt Values (ridSeq.nextval, 0, 0, :custId)");
   oci_bind_by_name($stid2, ':custId', $custId);
   oci_execute($stid2,OCI_DEFAULT);
   //$receiptID = SELECT rid FROM Receipt
-  $receiptID = oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS);
+  $receiptID = array_pop(array_reverse(oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS)));
   oci_free_statement(stid2);
 	
   $price = 0.0;
   //OrderedProduct
+  echo "<h1>Order Submitted:</h1>";
   foreach($_POST as $key => $value) {
   
     //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
@@ -128,29 +128,29 @@ if (isset($_POST['submit']))
     //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
 		if ($value != null){
       //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-			if ($value>-10) {
-        echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+			if ($value>0) {
+        echo "<h4>Product: ".$key."; Quantity: ".$value.";</h2>";
         $stid2 = oci_parse($conn, "SELECT price FROM Product WHERE pid=:key");
 				oci_bind_by_name($stid2, ':key', $key);
 				oci_execute($stid2,OCI_DEFAULT);
         //$tempPrice = SELECT price FROM Product WHERE pid=$key
         //TODO: $tempPrice is not a number
-				$tempPrice = oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS);
+				$tempPrice = array_pop(array_reverse(oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS)));
         oci_free_statement(stid2);
         
-				echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+				//echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
 				$price = $price + (intval($tempPrice) * intval($value));
-        echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+        //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
         
 				//INSERT INTO OrderedProduct (opidSeq.nextval, $key, $receiptID, $value)
-				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct (opidSeq.nextval, :key, :receiptID, :value)");
+				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :key, :receiptID, :value)");
 				oci_bind_by_name($stid2, ':key', $key);
 				oci_bind_by_name($stid2, ':receiptID', $receiptID);
 				oci_bind_by_name($stid2, ':value', $value);
 				oci_execute($stid2,OCI_DEFAULT);
         oci_free_statement(stid2);
 
-        echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+        //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
 			}
 		}
 	}
@@ -164,7 +164,7 @@ if (isset($_POST['submit']))
   
   //Payment
   //INSERT INTO Payment (payment_idSeq.nextval, $_POST['ccn'], $_POST['exp'], $_POST['cvv'], $_POST['cardName'], $price, $receiptID)
-  $stid2 = oci_parse($conn, "INSERT INTO Payment (payment_idSeq.nextval, :ccn, :exp, :cvv, :cardName'], :price, :receiptID)");
+  $stid2 = oci_parse($conn, "INSERT INTO Payment (payment_idSeq.nextval, :ccn, :exp, :cvv, :cardName, :price, :receiptID)");
   oci_bind_by_name($stid2, ':ccn', $_POST['ccn']);
   oci_bind_by_name($stid2, ':exp', $_POST['exp']);
   oci_bind_by_name($stid2, ':cvv', $_POST['cvv']);
@@ -263,7 +263,7 @@ echo "</table>\n";
 
 <hr style="border-bottom: dotted 1px #000" />
 
-<h3> Add Customer </h3>
+<h3> Payment (not secure, for testing only) </h3>
 <!--<form action="clothing_store.php" method="post">  moved up to include table inputs-->
 <!--
   <br>  ID:<br>

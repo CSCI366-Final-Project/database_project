@@ -42,6 +42,8 @@ body {
   <a href="supplier.php">Supplier</a>
   <a class="active" href="inventory.php">Full Inventory</a>
   <a href="clothing_store.php">Submit Order</a>
+  <a href="login_page.php">Logout</a>
+
 
 </div>
 

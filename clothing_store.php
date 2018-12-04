@@ -56,12 +56,9 @@ th {
 <body>
 
 <div class="topnav">
-  <a href="manager.php">Customers</a>
-  <a href="department.php">Department</a>
-  <a href="product.php">Product</a>
-  <a href="supplier.php">Supplier</a>
-  <a href="inventory.php">Full Inventory</a>
   <a class="active" href="clothing_store.php">Submit Order</a>
+  <a href="login_page.php">Logout</a>
+
 </div>
 
 <div style="padding-left:16px">

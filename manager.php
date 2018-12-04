@@ -41,7 +41,6 @@ body {
   <a href="product.php">Product</a>
   <a href="supplier.php">Supplier</a>
   <a href="inventory.php">Full Inventory</a>
-  <a href="clothing_store.php">Submit Order</a>
   <a href="login_page.php">Logout</a>
 </div>
 
@@ -190,10 +189,10 @@ th {
   <input type="text" name="lastname">
   <br>
   Email:<br>
-  <input type="text" name="email">
+  <input type="email" pattern="+@.com" class=”form-control” name="email">
   <br>
   Password:<br>
-  <input type="text" name="password">
+  <input type="password" name="password">
   <br>
   Address:<br>
   <input type="text" name="address">

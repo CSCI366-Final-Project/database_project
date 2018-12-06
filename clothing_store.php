@@ -77,37 +77,18 @@ $conn = oci_connect('johollem', 'Feb651997', '(DESCRIPTION=(ADDRESS_LIST=(ADDRES
 
 if (isset($_POST['submit']))
 {
-/*
-  //$ID = $_POST['ID'];
-  //$firstname = $_POST['firstname'];
-  //$lastname = $_POST['lastname'];
-  //$email = $_POST['email'];
-  //$password = $_POST['password'];
-  //$address = $_POST['address'];
-
-  //$stid2 = oci_parse($conn, "INSERT INTO Customer (cid, first_name, last_name, email, password, address) VALUES (cidSeq.nextval, :firstname, :lastname, :email, :password, :address)");
-  //stid
-  //oci_bind_by_name
-  //oci_execute
-  //oci_free_statement
-  //oci_bind_by_name($stid2, ':ID', $ID);
-  oci_bind_by_name($stid2, ':email', $_POST['email']);
-  oci_bind_by_name($stid2, ':ccn', $_POST['ccn']);
-  oci_bind_by_name($stid2, ':exp', $_POST['exp']);
-  oci_bind_by_name($stid2, ':cvv', $_POST['cvv']);
-  oci_bind_by_name($stid2, ':cardName', $_POST['cardName']);
-  
-*/
-
   $stid2 = oci_parse($conn, "SELECT cid FROM Customer WHERE email=:email");
-  oci_bind_by_name($stid2, ':email', $_POST['email']);
+  oci_bind_by_name($stid2, ':email', trim($_POST['email']));
   oci_execute($stid2,OCI_DEFAULT);
   $custId = array_pop(array_reverse(oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS)));
   oci_free_statement(stid2);
+  //if($custId==null) {
+    echo "<h1>Email ".$custId." not found</h1>";
+  //}
   
   //Receipt
   //INSERT INTO Receipt (ridSeq.nextval, 0, $custId)
-  $stid2 = oci_parse($conn, "INSERT INTO Receipt Values (ridSeq.nextval, 0, 0, :custId)");
+  $stid2 = oci_parse($conn, "INSERT INTO Receipt Values (ridSeq.nextval, 0, :custId)");
   oci_bind_by_name($stid2, ':custId', $custId);
   oci_execute($stid2,OCI_DEFAULT);
   //$receiptID = SELECT rid FROM Receipt
@@ -136,12 +117,12 @@ if (isset($_POST['submit']))
         oci_free_statement(stid2);
         
 				//echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-				$price = $price + (intval($tempPrice) * intval($value));
+				$price = $price + (floatval($tempPrice) * intval($value));
         //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
         
 				//INSERT INTO OrderedProduct (opidSeq.nextval, $key, $receiptID, $value)
-				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :key, :receiptID, :value)");
-				oci_bind_by_name($stid2, ':key', $key);
+				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :value, :receiptID, :key)");
+				oci_bind_by_name($stid2, ':key', intval($key));
 				oci_bind_by_name($stid2, ':receiptID', $receiptID);
 				oci_bind_by_name($stid2, ':value', $value);
 				oci_execute($stid2,OCI_DEFAULT);
@@ -160,10 +141,17 @@ if (isset($_POST['submit']))
   oci_free_statement(stid2);
   
   //Payment
-  //INSERT INTO Payment (payment_idSeq.nextval, $_POST['ccn'], $_POST['exp'], $_POST['cvv'], $_POST['cardName'], $price, $receiptID)
-  $stid2 = oci_parse($conn, "INSERT INTO Payment (payment_idSeq.nextval, :ccn, :exp, :cvv, :cardName, :price, :receiptID)");
+  if ($_POST['expMonth']>9){
+    $expMonth = (string)$_POST['expMonth'];
+  } else {
+    $expMonth = '0' . (string)$_POST['expMonth'];
+  }
+  //INSERT INTO Payment VALUES (payment_idSeq.nextval, :ccn, TRUNC(TO_DATE(':expYear/:expMonth/03 00:00:00', 'yyyy/mm/dd hh24:mi:ss')), :cvv, :cardName, :price, :receiptID)
+  //INSERT INTO Payment VALUES (payment_idSeq.nextval, '1234', TRUNC(TO_DATE('2005/06/03 00:00:00', 'yyyy/mm/dd hh24:mi:ss')), 123, 'Jordan Holleman', 46.5, 1)
+  $stid2 = oci_parse($conn, "INSERT INTO Payment VALUES (payment_idSeq.nextval, :ccn, TRUNC(TO_DATE(':expYear/:expMonth/03 00:00:00', 'yyyy/mm/dd hh24:mi:ss')), :cvv, :cardName, :price, :receiptID)");
   oci_bind_by_name($stid2, ':ccn', $_POST['ccn']);
-  oci_bind_by_name($stid2, ':exp', $_POST['exp']);
+  oci_bind_by_name($stid2, ':expMonth', $expMonth);
+  oci_bind_by_name($stid2, ':expYear', $_POST['expYear']);
   oci_bind_by_name($stid2, ':cvv', $_POST['cvv']);
   oci_bind_by_name($stid2, ':cardName', $_POST['cardName']);
   oci_bind_by_name($stid2, ':price', $price);
@@ -173,43 +161,11 @@ if (isset($_POST['submit']))
 
   echo "<h1>Payment of $".$price." in process</h1>";
 }
-/* 
-  //get IDs with quantities
-  foreach($_POST as $key => $value) {
-	if (is_numeric($key)) {
-		if ($value != null){
-			if ($value>0) {
-				
-			}
-		}
-	}
-  }
-
-  $r = oci_execute($stid2, OCI_NO_AUTO_COMMIT);
-
-  // Commit the changes
-  $r = oci_commit($conn);
-  if (!$r) {
-    $e = oci_error($conn);
-    trigger_error(htmlentities($e['message']), E_USER_ERROR);
-  }
-
-  if (!$r) {    
-    $e = oci_error($stid2);
-    trigger_error(htmlentities($e['message']), E_USER_ERROR);
-  }
 
 
-//method to delete customer record
-if (isset($_POST['delete'])) {
-	$query = "DELETE FROM Customer ";  
-	$query .="WHERE email = '".$_POST["email"]."' ";  
-	$objParse = oci_parse($conn, $query);  
-	oci_bind_by_name($query, ':email', $email);
-	$objExecute = oci_execute($objParse, OCI_DEFAULT);  
-	oci_commit($conn);
-}
-*/
+
+
+
 
 //put your query here
 $query = "SELECT * FROM Product ORDER BY pid";
@@ -268,24 +224,28 @@ echo "</table>\n";
   <br>
 -->
 	
-  Email:<br>
-  <input type="text" name="email">
-  <br>
-  Credit Card Number:<br>
-  <input type="text" name="ccn">
-  <br>
-  Card Expiration:<br>
-  <input type="text" name="exp">
-  <br>
-  CVV:<br>
-  <input type="text" name="cvv">
-  <br>
-  Name on Card:<br>
-  <input type="text" name="cardName">
-  <br><br>
+  Email:<br/>
+  <input type="text" name="email"><br/>
+  <br/>
+  Credit Card Number:<br/>
+  <input type="text" name="ccn"><br/>
+  <br/>
+  Card Expiration Month:<br/>
+  <input type="number" name="expMonth" min="1" step="1" max="12"><br/>
+  <br/>
+  Card Expiration Year:<br/>
+  <input type="number" name="expYear" min="2000" step="1"><br/>
+  <br/>
+  CVV:<br/>
+  <input type="text" name="cvv"><br/>
+  <br/>
+  Name on Card:<br/>
+  <input type="text" name="cardName"><br/>
+  <br/><br/>
   <input class="submit" name="submit" type="submit" value="Submit">
 </form> 
-
+<br/>
+<br/>
 </body>
 </html>
 

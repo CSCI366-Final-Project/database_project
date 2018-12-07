@@ -102,36 +102,36 @@ if (isset($_POST['submit']))
   
     //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
 
-	if (is_numeric($key)) {
-    //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-		if ($value != null){
+    if (is_numeric($key)) {
       //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-			if ($value>0) {
-        echo "<h4>Product: ".$key."; Quantity: ".$value.";</h2>";
-        $stid2 = oci_parse($conn, "SELECT price FROM Product WHERE pid=:key");
-				oci_bind_by_name($stid2, ':key', $key);
-				oci_execute($stid2,OCI_DEFAULT);
-        //$tempPrice = SELECT price FROM Product WHERE pid=$key
-        //TODO: $tempPrice is not a number
-				$tempPrice = array_pop(array_reverse(oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS)));
-        oci_free_statement(stid2);
-        
-				//echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-				$price = $price + (floatval($tempPrice) * intval($value));
+      if ($value != null){
         //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-        
-				//INSERT INTO OrderedProduct (opidSeq.nextval, $key, $receiptID, $value)
-				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :value, :receiptID, :key)");
-				oci_bind_by_name($stid2, ':key', intval($key));
-				oci_bind_by_name($stid2, ':receiptID', $receiptID);
-				oci_bind_by_name($stid2, ':value', $value);
-				oci_execute($stid2,OCI_DEFAULT);
-        oci_free_statement(stid2);
+        if ($value>0) {
+          echo "<h4>Product: ".$key."; Quantity: ".$value.";</h2>";
+          $stid2 = oci_parse($conn, "SELECT price FROM Product WHERE pid=:key");
+          oci_bind_by_name($stid2, ':key', $key);
+          oci_execute($stid2,OCI_DEFAULT);
+          //$tempPrice = SELECT price FROM Product WHERE pid=$key
+          //TODO: $tempPrice is not a number
+          $tempPrice = array_pop(array_reverse(oci_fetch_array($stid2, OCI_ASSOC+OCI_RETURN_NULLS)));
+          oci_free_statement(stid2);
+          
+          //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+          $price = $price + (floatval($tempPrice) * intval($value));
+          //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+          
+          //INSERT INTO OrderedProduct (opidSeq.nextval, $key, $receiptID, $value)
+          $stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :value, :receiptID, :key)");
+          oci_bind_by_name($stid2, ':key', intval($key));
+          oci_bind_by_name($stid2, ':receiptID', $receiptID);
+          oci_bind_by_name($stid2, ':value', $value);
+          oci_execute($stid2,OCI_DEFAULT);
+          oci_free_statement(stid2);
 
-        //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-			}
-		}
-	}
+          //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
+        }
+      }
+	  }
   }
   //UPDATE Receipt SET price = $price WHERE rid=$receiptID
   $stid2 = oci_parse($conn, "UPDATE Receipt SET price = :price WHERE rid=:receiptID");
@@ -171,31 +171,30 @@ if (isset($_POST['submit']))
 $query = "SELECT * FROM Product ORDER BY pid";
 
 $stid = oci_parse($conn,$query);
-oci_execute($stid,OCI_DEFAULT);
+oci_execute($stid);
 
-	// Format table layout
-	print "<table cols=6 border=1>\n";
-	print "<tr>\n";
-	print "<th>ID</th>\n";
-	print "<th>Name</th>\n";
-	print "<th>Price</th>\n";
-	print "<th>In Stock</th>\n";
-	print "<th>Department</th>\n";
-	print "<th>Quantity to Order</th>\n";
-	print "</tr>";
+// Format table layout
+echo "<table cols=5 border=1>\n";
+echo "<tr>\n";
+echo "<th>ID</th>\n";
+echo "<th>Name</th>\n";
+echo "<th>Price</th>\n";
+echo "<th>In Stock</th>\n";
+echo "<th>Department</th>\n";
+//echo "<th>Quantity to Order</th>\n";
+echo "</tr>";
 
-  
 //iterate through each row
-while ($row = oci_fetch_array($stid,OCI_ASSOC+OCI_RETURN_NULLS)) 
+while ($row = oci_fetch_array($stid,OCI_BOTH+OCI_RETURN_NULLS)) 
 {
     echo "<tr>\n";
     //iterate through each item in the row and echo it  
     foreach ($row as $item)    
     {
-        echo "		<td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . " </td>\n";
+        echo "    <td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
     }   
 	$arr = array_values($row);
-	echo '<td><input type="number" name="'.$arr[0].'" value="0" min="0" step="1"></td>';
+  //echo '<td><input type="number" name="'.$arr[0].'" value="0" min="0" step="1"></td>';
 	echo "</tr>\n";
 }
 oci_free_statement($stid);

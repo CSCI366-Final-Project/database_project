@@ -136,11 +136,11 @@ if (isset($_POST['submit']))
         oci_free_statement(stid2);
         
 				//echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
-				$price = $price + (intval($tempPrice) * intval($value));
+				$price = $price + (floatval($tempPrice) * intval($value));
         //echo "<h2>Key: ".$key."; Value: ".$value.";</h2>";
         
 				//INSERT INTO OrderedProduct (opidSeq.nextval, $key, $receiptID, $value)
-				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :key, :receiptID, :value)");
+				$stid2 = oci_parse($conn, "INSERT INTO OrderedProduct Values (opidSeq.nextval, :value, :receiptID, :key)");
 				oci_bind_by_name($stid2, ':key', $key);
 				oci_bind_by_name($stid2, ':receiptID', $receiptID);
 				oci_bind_by_name($stid2, ':value', $value);

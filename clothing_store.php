@@ -56,8 +56,8 @@ th {
 <body>
 
 <div class="topnav">
+  <a class="active" href="customer_signup.php">Home</a>
   <a class="active" href="clothing_store.php">Submit Order</a>
-  <a href="login_page.php">Logout</a>
 
 </div>
 

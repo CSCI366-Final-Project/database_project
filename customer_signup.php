@@ -56,8 +56,7 @@ th {
 <body>
 
 <div class="topnav">
-  <a class="active" href="login_page.php">Home</a>
-  <a href="login_page.php">Logout</a>
+  <a class="active" href="customer_signup.php">Home</a>
 </div>
 
 <h3> Signup </h3>
@@ -80,8 +79,10 @@ th {
   <input class="submit" name="submit" type="submit" value="Sign Up">
 </form> 
 
-<a href="login_page.php">Click Here To Login</a>
+<a href="clothing_store.php">Already have an account?</a>
+<a href = "login_page.php">Admin?</a>
 </form>
+
 </body>
 </html>
 <?php

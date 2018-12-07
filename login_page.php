@@ -42,14 +42,36 @@ body {
 </div>
 
 <input type = "email" id=”email” pattern="+@.com" class=”form-control” placeholder=email name=”email”/>
+
 <input type = "password" id=”password” placeholder = "password" password = "password"/>
-<form action="manager.php">
-	<input type="submit" value ="Login Admin"/>
-</form>
-<form action="clothing_store.php">
-	<input type="submit" value="Login Customer"/>
+
+<form action="login_page.php" method = "post">
+	<input type="submit" name="login" value ="Login Admin"/>
 </form>
 
 <a href="customer_signup.php">Register</a>
 </body>
 </html>
+
+<?php
+
+function verifyAdmin()
+{
+	
+	if($email == "admin@admin.com")
+		{
+			echo "hello admin";
+		}
+	else{
+		echo "not admin.";
+		echo $email;
+	}
+}
+
+if(array_key_exists('login',$_POST)){
+	$email = $_POST["email"];
+	echo $email;
+	verifyAdmin();
+}
+
+?>

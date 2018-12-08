@@ -41,7 +41,7 @@ body {
   <a href="product.php">Product</a>
   <a class="active" href="supplier.php">Supplier</a>
   <a href="inventory.php">Full Inventory</a>
-  <a href="login_page.php">Logout</a>
+  <a href="admin_login.php">Logout</a>
 
 </div>
 

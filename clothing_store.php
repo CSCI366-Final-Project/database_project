@@ -56,7 +56,7 @@ th {
 <body>
 
 <div class="topnav">
-  <a class="active" href="customer_signup.php">Home</a>
+  <a href="customer_signup.php">Customer Signup</a>
   <a class="active" href="clothing_store.php">Submit Order</a>
 
 </div>
@@ -269,7 +269,7 @@ echo "</table>\n";
 -->
 	
   Email:<br>
-  <input type="text" name="email">
+  <input type="email" pattern="+@.com" class=”form-control” name="email">
   <br>
   Credit Card Number:<br>
   <input type="text" name="ccn">

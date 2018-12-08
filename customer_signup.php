@@ -56,7 +56,11 @@ th {
 <body>
 
 <div class="topnav">
-  <a class="active" href="customer_signup.php">Home</a>
+  <a class="active" href="customer_signup.php">Customer Signup</a>
+  <a href="clothing_store.php">Guest Checkout</a>
+  <a href="admin_login.php">Admin Login</a>
+
+
 </div>
 
 <h3> Signup </h3>
@@ -78,9 +82,7 @@ th {
   <br><br>
   <input class="submit" name="submit" type="submit" value="Sign Up">
 </form> 
-
-<a href="clothing_store.php">Already have an account?</a>
-<a href = "login_page.php">Admin?</a>
+<br>
 </form>
 
 </body>
@@ -128,6 +130,8 @@ if (isset($_POST['submit']))
     $e = oci_error($stid2);
     trigger_error(htmlentities($e['message']), E_USER_ERROR);
   }
+header('Location: clothing_store.php');
+
 }
 
   
@@ -138,6 +142,5 @@ oci_free_statement($stid);
 
 
 oci_close($conn);
-
 
 ?>
